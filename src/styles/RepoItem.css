@@ -1,0 +1,33 @@
+.repo-item {
+  display: flex;
+  padding: 20px 0px;
+  width: 100%;
+  margin: 0px 16px;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
+a {
+  text-decoration: none;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 80%;
+  height: 100%;
+}
+
+.repo-stats > span {
+  margin-right: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 20%;
+  height: auto;
+}

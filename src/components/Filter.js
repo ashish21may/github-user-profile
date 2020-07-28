@@ -17,13 +17,13 @@ class Filter extends Component {
   handleTypeChange = (e) => {
     this.setState({
       selectedType: e.target.value
-    }, () => this.props.type(this.state.selectedType))
+    }, () => this.props.type(this.state.selectedType, this.state.selectedlanguage))
   }
 
   handleLanguageChange = (e) => {
     this.setState({
       selectedlanguage: e.target.value
-    }, () => this.props.language(this.state.selectedlanguage))
+    }, () => this.props.type(this.state.selectedType, this.state.selectedlanguage))
   }
 
   render () {

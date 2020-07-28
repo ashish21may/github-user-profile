@@ -12,15 +12,6 @@ class App extends Component {
     repos: []
   }
 
-  // Currently We are handling multiple changes in drop-down via
-  // Session storage. And it handles most of the cases except two cases.
-  // To-Do Item: Below 2 cases
-  // 1. When one filter is selected and other is made all from some other value.
-  // 2. When updatedRepos/ currentrepo becomes empty and we make more selections.
-
-  // Above two cases have arisen because I have added aditional functionality 
-  // As I am working with 2 select dropdowns but example only had one functioning drop-down.
-
   async componentDidMount () {
     const userResponse = await axios.get(
       'https://api.github.com/users/supreetsingh247'
@@ -28,8 +19,9 @@ class App extends Component {
     const userRepos = await axios.get(
       'https://api.github.com/users/supreetsingh247/repos'
     )
-    sessionStorage.removeItem('repos');
-    sessionStorage.removeItem('currentRepos');
+    // Claring Session Storage to display fresh page on refresh
+    sessionStorage.removeItem('repos')
+    sessionStorage.removeItem('currentRepos')
     this.setState(
       {
         user: userResponse.data,
@@ -41,9 +33,9 @@ class App extends Component {
 
   handleSearch = searchValue => {
     console.log('Searched value: ', searchValue)
-    const repos = JSON.parse(sessionStorage.getItem('repos'))
+    const repos = JSON.parse(sessionStorage.getItem('currentRepos'))
     const updatedRepos = repos.filter(repo =>
-      repo.name.toLowerCase().includes(searchValue)
+      repo.name.toLowerCase().includes(searchValue.toLowerCase())
     )
 
     this.setState({
@@ -51,42 +43,21 @@ class App extends Component {
     })
   }
 
-  handleType = selectedType => {
+  handleSelection = (selectedType, language) => {
     const repos = JSON.parse(sessionStorage.getItem('repos'))
-    const currentRepos = JSON.parse(sessionStorage.getItem('currentRepos'))
-    if (selectedType === 'all') {
+    if (selectedType === 'all' && language === 'all') {
       this.setState({
         repos
       })
     } else {
-      const updatedRepos = currentRepos
-        ? currentRepos.filter(repo => repo[selectedType])
-        : repos.filter(repo => repo[selectedType])
-      this.setState(
-        {
-          repos: updatedRepos
-        },
-        () =>
-          sessionStorage.setItem(
-            'currentRepos',
-            JSON.stringify(this.state.repos)
-          )
-      )
-    }
-  }
-
-  handleLanguage = language => {
-    const repos = JSON.parse(sessionStorage.getItem('repos'))
-    const currentRepos = JSON.parse(sessionStorage.getItem('currentRepos'))
-    if (language === 'all') {
-      this.setState({
-        repos
-      })
-    } else {
-      const updatedRepos = currentRepos
-        ? currentRepos.filter(repo => repo.language === language)
-        : repos.filter(repo => repo.language === language)
-      // console.log('Language: ', language, 'UpdatedRepos : ', updatedRepos)
+      let updatedRepos =
+        selectedType !== 'all'
+          ? repos.filter(repo => repo[selectedType])
+          : repos
+      updatedRepos =
+        language !== 'all'
+          ? updatedRepos.filter(repo => repo.language === language)
+          : updatedRepos
       this.setState(
         {
           repos: updatedRepos
@@ -102,7 +73,7 @@ class App extends Component {
 
   storeRepos = () => {
     sessionStorage.setItem('repos', JSON.stringify(this.state.repos))
-    console.log(JSON.parse(sessionStorage.getItem('repos')))
+    sessionStorage.setItem('currentRepos', JSON.stringify(this.state.repos))
   }
 
   render () {
@@ -112,8 +83,8 @@ class App extends Component {
         <Bio user={user} />
         <div>
           <Filter
-            type={this.handleType}
-            language={this.handleLanguage}
+            type={this.handleSelection}
+            language={this.handleSelection}
             search={this.handleSearch}
           />
           <Repos repos={repos} />
